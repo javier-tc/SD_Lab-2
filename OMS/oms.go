@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 
@@ -20,15 +21,16 @@ func failOnError(err error, msg string) {
 }
 
 func (s *server) ContOMS(ctx context.Context, msg *pb.EstadoPersona) (*pb.EstadoPersona, error) {
+	fmt.Printf("Nombre: %s | Apellido: %s | Estado: %s \n", msg.Nombre, msg.Apellido, msg.Estado)
 	return msg, nil
 }
 
-func envioDatanode(port string) {
+func envioDatanode(port string, id string, nombre string, apellido string) {
 	//envio a datanode
 	//port
-	id_persona := "id"
-	nombre_persona := "nombre"
-	apellido_persona := "apellido"
+	id_persona := id
+	nombre_persona := nombre
+	apellido_persona := apellido
 
 	conn, err := grpc.Dial(port, grpc.WithInsecure()) //conectamos con el servidor
 	failOnError(err, "No se pudo conectar con el servidor")
@@ -43,7 +45,6 @@ func envioDatanode(port string) {
 }
 
 func main() {
-
 	port := ":50051"
 	listener, err := net.Listen("tcp", port) //conexion sincrona
 	failOnError(err, "La conexion no se pudo crear")
@@ -51,9 +52,11 @@ func main() {
 	serv := grpc.NewServer()
 	pb.RegisterComServServer(serv, &server{})
 
+	fmt.Printf("OMS escuchando en %s\n", port)
+
 	if err == serv.Serve(listener) {
 		failOnError(err, "Fallo al iniciar server")
 	}
 
-	envioDatanode(port)
+	//envioDatanode(port)
 }

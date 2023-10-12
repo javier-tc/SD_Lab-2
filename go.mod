@@ -1,4 +1,4 @@
-module github.com/Sistemas-Distribuidos-2023-02/Grupo06-Laboratorio-2/proto
+module github.com/javier-tp/SD_Lab-2
 
 go 1.21.0
 
