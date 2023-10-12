@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package grpc;
+
+option go_package = "./proto";
+
+message EstadoPersona {
+    string nombre = 1;
+    string apellido = 2;
+    string estado = 3;
+}
+
+message IdPersona {
+    string id = 1;
+    string nombre = 2;
+    string apellido = 3;
+}
+
+service ComServ {
+    rpc ContOMS (EstadoPersona) returns (EstadoPersona);
+    rpc OMSDataNode (IdPersona) returns (IdPersona);
+}
