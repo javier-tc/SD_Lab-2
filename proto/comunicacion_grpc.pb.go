@@ -24,6 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type ComServClient interface {
 	ContOMS(ctx context.Context, in *EstadoPersona, opts ...grpc.CallOption) (*EstadoPersona, error)
 	OMSDataNode(ctx context.Context, in *IdPersona, opts ...grpc.CallOption) (*IdPersona, error)
+	ConsultaDN(ctx context.Context, in *IdPersona, opts ...grpc.CallOption) (*IdPersona, error)
+	ConsultaOMS(ctx context.Context, in *EstadoPersona, opts ...grpc.CallOption) (*EstadoPersona, error)
 }
 
 type comServClient struct {
@@ -52,12 +54,32 @@ func (c *comServClient) OMSDataNode(ctx context.Context, in *IdPersona, opts ...
 	return out, nil
 }
 
+func (c *comServClient) ConsultaDN(ctx context.Context, in *IdPersona, opts ...grpc.CallOption) (*IdPersona, error) {
+	out := new(IdPersona)
+	err := c.cc.Invoke(ctx, "/grpc.ComServ/ConsultaDN", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *comServClient) ConsultaOMS(ctx context.Context, in *EstadoPersona, opts ...grpc.CallOption) (*EstadoPersona, error) {
+	out := new(EstadoPersona)
+	err := c.cc.Invoke(ctx, "/grpc.ComServ/ConsultaOMS", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ComServServer is the server API for ComServ service.
 // All implementations must embed UnimplementedComServServer
 // for forward compatibility
 type ComServServer interface {
 	ContOMS(context.Context, *EstadoPersona) (*EstadoPersona, error)
 	OMSDataNode(context.Context, *IdPersona) (*IdPersona, error)
+	ConsultaDN(context.Context, *IdPersona) (*IdPersona, error)
+	ConsultaOMS(context.Context, *EstadoPersona) (*EstadoPersona, error)
 	mustEmbedUnimplementedComServServer()
 }
 
@@ -70,6 +92,12 @@ func (UnimplementedComServServer) ContOMS(context.Context, *EstadoPersona) (*Est
 }
 func (UnimplementedComServServer) OMSDataNode(context.Context, *IdPersona) (*IdPersona, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OMSDataNode not implemented")
+}
+func (UnimplementedComServServer) ConsultaDN(context.Context, *IdPersona) (*IdPersona, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConsultaDN not implemented")
+}
+func (UnimplementedComServServer) ConsultaOMS(context.Context, *EstadoPersona) (*EstadoPersona, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConsultaOMS not implemented")
 }
 func (UnimplementedComServServer) mustEmbedUnimplementedComServServer() {}
 
@@ -120,6 +148,42 @@ func _ComServ_OMSDataNode_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ComServ_ConsultaDN_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdPersona)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ComServServer).ConsultaDN(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.ComServ/ConsultaDN",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ComServServer).ConsultaDN(ctx, req.(*IdPersona))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ComServ_ConsultaOMS_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EstadoPersona)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ComServServer).ConsultaOMS(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.ComServ/ConsultaOMS",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ComServServer).ConsultaOMS(ctx, req.(*EstadoPersona))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ComServ_ServiceDesc is the grpc.ServiceDesc for ComServ service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +198,14 @@ var ComServ_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "OMSDataNode",
 			Handler:    _ComServ_OMSDataNode_Handler,
+		},
+		{
+			MethodName: "ConsultaDN",
+			Handler:    _ComServ_ConsultaDN_Handler,
+		},
+		{
+			MethodName: "ConsultaOMS",
+			Handler:    _ComServ_ConsultaOMS_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
